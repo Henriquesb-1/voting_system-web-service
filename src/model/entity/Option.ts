@@ -3,10 +3,10 @@ import Poll from "./Poll";
 export default class Option {
     private _id: number;
     private _content: string;
-    private _voteCount: string;
+    private _voteCount: number;
     private _poll: Poll;
 
-    public constructor(id: number, content: string, voteCount: string, poll: Poll) {
+    public constructor(id: number, content: string, voteCount: number, poll: Poll) {
         this._id = id;
         this._content = content;
         this._voteCount = voteCount;
@@ -33,7 +33,7 @@ export default class Option {
         return this._voteCount;
     }
     
-    public set voteCount(voteCount: string) {
+    public set voteCount(voteCount: number) {
         this._voteCount = voteCount;
     }
 
