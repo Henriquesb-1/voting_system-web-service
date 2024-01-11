@@ -35,13 +35,14 @@ export default class PollService implements PollRepository {
                 poll.options = optionsQuery;
             }
 
+            await connection.closeConnection();
+
             return {
                 data: polls,
                 pages,
                 total
             }
         } catch (error) {
-            console.log(error)
             throw error;
         }
     }
@@ -83,6 +84,8 @@ export default class PollService implements PollRepository {
 
     public async update(poll: Poll): Promise<Poll> {
         try {
+            const connection = new Connection();
+
             return poll;
         } catch (error) {
             throw error;
