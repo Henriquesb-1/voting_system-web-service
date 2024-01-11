@@ -1,4 +1,5 @@
 import mySql, { RowDataPacket } from "mysql2/promise";
+import Transaction from "./Transaction";
 
 export default class Connection {
     private _connection: Promise<mySql.Connection>;
