@@ -44,7 +44,6 @@ export default class OptionsController {
                 }
             }
         } catch (error) {
-            console.log(error)
             res.status(500).send();
         }
     }
