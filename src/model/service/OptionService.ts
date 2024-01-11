@@ -62,4 +62,22 @@ export default class OptionService implements OptionRepository {
             throw error;
         }
     }
+
+    public async getTotalOptionsRegistered(pollId: number): Promise<number> {
+        try {
+            const connection = new Connection();
+
+            const optionsRegisteredQuery = await connection.query(`
+                SELECT COUNT(id) as total 
+                FROM options
+                WHERE poll_id = ?
+            `, [pollId]);
+
+            const [optionsRegistered] = optionsRegisteredQuery.map((options: {total: number}) => options.total);
+
+            return optionsRegistered;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
