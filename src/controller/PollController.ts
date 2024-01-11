@@ -12,7 +12,9 @@ export default class PollController {
 
     public async get(req: Request, res: Response) {
         try {
-
+            const page = Number.parseInt(<string>req.query.page || "1");
+            const { data, pages, total } = await this._pollRepository.get(page);
+            res.status(200).json({data, pages, total})
         } catch (error) {
             res.status(500).send();
         }

@@ -1,28 +1,47 @@
+import Option from "../entity/Option";
 import Poll from "../entity/Poll";
-import OptionRepository from "../repository/OptionRepository";
 import PollRepository from "../repository/PollRepository";
+import getNecessariesPages from "../utils/Paginator";
 import Connection from "./Connection";
-import OptionService from "./OptionService";
 import Transaction from "./Transaction";
 
 export default class PollService implements PollRepository {
 
-    private _optionRepository: OptionRepository;
-
-    public constructor() {
-        this._optionRepository = new OptionService();
-    }
+    private _limit: number = 10;
 
     public async get(page: number): Promise<{ data: Poll[], pages: number, total: number }> {
         try {
-            const polls = [new Poll(0, "", "", "", [])];
+            const connection = new Connection();
+
+            const totalQuery = await connection.query("SELECT COUNT(id) as total FROM poll");
+            const [total] = totalQuery.map((poll: {total: number}) => poll.total);
+
+            const polls = <Poll[]>await connection.query(`
+                SELECT id, title, start_date as startDate, end_date as endDate
+                FROM poll
+                LIMIT ?
+                OFFSET ?
+            `, [this._limit, (page * this._limit - this._limit)]);
+
+            const pages = getNecessariesPages(total, this._limit);
+
+            for(let poll of polls) {
+                const optionsQuery = <Option[]> await connection.query(`
+                    SELECT id, content, vote_count, poll_id as pollId
+                    FROM options
+                    WHERE poll_id = ?                
+                `, [poll.id]);
+
+                poll.options = optionsQuery;
+            }
 
             return {
                 data: polls,
-                pages: 0,
-                total: 0
+                pages,
+                total
             }
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }
