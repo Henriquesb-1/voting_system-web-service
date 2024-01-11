@@ -22,6 +22,12 @@ export default class Routes {
             .delete((req, res) => pollController.delete(req, res));
     }
 
+    private OptionsRoutes() {
+        const app = this._app;
+
+        
+    }
+
     public createRoutes() {
         this.PollRoutes();
     }
