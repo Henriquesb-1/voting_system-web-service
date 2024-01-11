@@ -61,7 +61,15 @@ export default class PollController {
 
     public async delete(req: Request, res: Response) {
         try {
+            const idToDelete = Number.parseInt(<string>req.params.id);
 
+            if(!idToDelete) {
+                res.status(400).send("Id precisa ser informado")
+            } else {
+                const pollToDelete = new Poll(idToDelete, "", "", "", []);
+                await this._pollRepository.delete(pollToDelete);
+                res.status(204).send();
+            }
         } catch (error) {
             res.status(500).send();
         }

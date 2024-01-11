@@ -103,6 +103,13 @@ export default class PollService implements PollRepository {
 
     public async delete(poll: Poll): Promise<Poll> {
         try {
+            const connection = new Connection();
+
+            await connection.query(`
+                DELETE FROM poll
+                WHERE id = ?
+            `, [poll.id]);
+
             return poll;
         } catch (error) {
             throw error;
