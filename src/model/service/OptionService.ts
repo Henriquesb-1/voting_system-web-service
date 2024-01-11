@@ -6,7 +6,7 @@ import Connection from "./Connection";
 export default class OptionService implements OptionRepository {
 
     //Options will be get along with polls
-    public async get(page: number): Promise<{data: Option[], pages: number, total: number}> {
+    public async get(page: number): Promise<{ data: Option[], pages: number, total: number }> {
         try {
             const options = [new Option(0, "", 0, new Poll(0, "", "", "", []))];
 
@@ -39,6 +39,16 @@ export default class OptionService implements OptionRepository {
 
     public async update(option: Option): Promise<Option> {
         try {
+            const connection = new Connection();
+
+            await connection.query(`
+                UPDATE options
+                SET content = ?, vote_count = ?
+                WHERE id = ?
+            `, [option.content, option.voteCount, option.id]);
+
+            await connection.closeConnection();
+
             return option;
         } catch (error) {
             throw error;

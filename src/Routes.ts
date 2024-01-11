@@ -29,7 +29,8 @@ export default class Routes {
         const optionsController = new OptionsController();
 
         app.route("/options")
-            .post((req, res) => optionsController.save(req, res));
+            .post((req, res) => optionsController.save(req, res))
+            .put((req, res) => optionsController.save(req, res));
     }
 
     public createRoutes() {
