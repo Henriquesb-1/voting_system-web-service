@@ -110,6 +110,8 @@ export default class PollService implements PollRepository {
                 WHERE id = ?
             `, [poll.id]);
 
+            await connection.closeConnection();
+
             return poll;
         } catch (error) {
             throw error;
@@ -120,6 +122,8 @@ export default class PollService implements PollRepository {
         try {
             const connection = new Connection();
             const polls = <Poll[]>await connection.query(`SELECT title FROM poll WHERE title = ?`, [poll.title]);
+            await connection.closeConnection();
+            
             return polls.length > 0;
         } catch (error) {
             throw error;
