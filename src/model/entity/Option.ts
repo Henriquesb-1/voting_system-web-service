@@ -6,10 +6,10 @@ export default class Option {
     private _voteCount: string;
     private _poll: Poll;
 
-    public constructor(id: number, content: string, startDate: string, poll: Poll) {
+    public constructor(id: number, content: string, voteCount: string, poll: Poll) {
         this._id = id;
         this._content = content;
-        this._voteCount = startDate;
+        this._voteCount = voteCount;
         this._poll = poll;
     }
 
