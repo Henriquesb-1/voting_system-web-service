@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import OptionRepository from "../model/repository/OptionRepository";
 import OptionService from "../model/service/OptionService";
+import Option from "../model/entity/Option";
 
-export default class PollController {
+export default class OptionsController {
     private _optionsRepository: OptionRepository;
 
-    public constructor(pollRepository: OptionRepository) {
-        this._optionsRepository = new OptionService();
+    public constructor(optionRepository?: OptionRepository) {
+        this._optionsRepository = optionRepository ||  new OptionService();
     }
 
     public async get(req: Request, res: Response) {
@@ -19,12 +20,22 @@ export default class PollController {
 
     public async save(req: Request, res: Response) {
         try {
-            if(req.method === "POST") {
+            const option: Option = req.body;
 
+            if(req.method === "POST") {
+                if(!option.content) {
+                    res.status(400).send("Conteudo precisa ser informado");
+                } else if(!option.poll || !option.poll.id) {
+                    res.status(400).send("Enquete precisa ser definida")
+                } else {
+                    await this._optionsRepository.save(option);
+                    res.status(200).json(option);
+                }
             } else if (req.method === "PUT") {
 
             }
         } catch (error) {
+            console.log(error)
             res.status(500).send();
         }
     }

@@ -1,5 +1,6 @@
 import { Application } from "express";
 import PollController from "./controller/PollController";
+import OptionsController from "./controller/OptionController";
 
 export default class Routes {
     private _app: Application;
@@ -25,10 +26,14 @@ export default class Routes {
     private OptionsRoutes() {
         const app = this._app;
 
-        
+        const optionsController = new OptionsController();
+
+        app.route("/options")
+            .post((req, res) => optionsController.save(req, res));
     }
 
     public createRoutes() {
         this.PollRoutes();
+        this.OptionsRoutes();
     }
 }
