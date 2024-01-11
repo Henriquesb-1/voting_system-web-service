@@ -15,7 +15,8 @@ export default class Routes {
 
         app.route("/poll")
             .get((req, res) => pollController.get(req, res))
-            .post((req, res) => pollController.save(req, res));
+            .post((req, res) => pollController.save(req, res))
+            .put((req, res) => pollController.save(req, res));
     }
 
     public createRoutes() {

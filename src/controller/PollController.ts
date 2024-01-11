@@ -24,9 +24,9 @@ export default class PollController {
         try {
             const poll: Poll = req.body;
 
-            const isPollOptionsContentEmpty = poll.options.filter(option => option.content === "");
-
             if (req.method === "POST") {
+                const isPollOptionsContentEmpty = poll.options.filter(option => option.content === "");
+
                 if (!poll.title) {
                     res.status(400).send("Titulo precisa ser informado");
                 } else if (!poll.endDate) {
@@ -43,8 +43,16 @@ export default class PollController {
                 }
 
             } else if (req.method === "PUT") {
-                await this._pollRepository.update(poll);
-                res.status(200).json(poll);
+                if(!poll.id) {
+                    res.status(400).send("Id precisa ser informado");
+                } else if (!poll.title) {
+                    res.status(400).send("Titulo precisa ser informado");
+                } else if (!poll.endDate) {
+                    res.status(400).send("Data final precisa ser informada");
+                } else {
+                    await this._pollRepository.update(poll);
+                    res.status(200).json(poll);
+                }
             }
         } catch (error) {
             res.status(500).send();

@@ -14,7 +14,7 @@ export default class PollService implements PollRepository {
             const connection = new Connection();
 
             const totalQuery = await connection.query("SELECT COUNT(id) as total FROM poll");
-            const [total] = totalQuery.map((poll: {total: number}) => poll.total);
+            const [total] = totalQuery.map((poll: { total: number }) => poll.total);
 
             const polls = <Poll[]>await connection.query(`
                 SELECT id, title, start_date as startDate, end_date as endDate
@@ -25,8 +25,8 @@ export default class PollService implements PollRepository {
 
             const pages = getNecessariesPages(total, this._limit);
 
-            for(let poll of polls) {
-                const optionsQuery = <Option[]> await connection.query(`
+            for (let poll of polls) {
+                const optionsQuery = <Option[]>await connection.query(`
                     SELECT id, content, vote_count, poll_id as pollId
                     FROM options
                     WHERE poll_id = ?                
@@ -86,8 +86,17 @@ export default class PollService implements PollRepository {
         try {
             const connection = new Connection();
 
+            await connection.query(`
+                UPDATE poll
+                SET title = ?, end_date = ?
+                WHERE id = ?
+            `, [poll.title, poll.endDate, poll.id])
+
+            await connection.closeConnection();
+
             return poll;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }
