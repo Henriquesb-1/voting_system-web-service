@@ -31,6 +31,9 @@ export default class Routes {
         app.route("/options")
             .post((req, res) => optionsController.save(req, res))
             .put((req, res) => optionsController.save(req, res));
+
+        app.route("/options/:id/:poll_id")
+            .delete((req, res) => optionsController.delete(req, res));
     }
 
     public createRoutes() {

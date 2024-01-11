@@ -57,13 +57,20 @@ export default class OptionService implements OptionRepository {
 
     public async delete(option: Option): Promise<Option> {
         try {
+            const connection = new Connection();
+
+            await connection.query(`
+                DELETE FROM options
+                WHERE id = ?
+            `, [option.id]);
+
             return option;
         } catch (error) {
             throw error;
         }
     }
 
-    public async getTotalOptionsRegistered(pollId: number): Promise<number> {
+    public async getTotalOptionsRegistered(option: Option): Promise<number> {
         try {
             const connection = new Connection();
 
@@ -71,7 +78,7 @@ export default class OptionService implements OptionRepository {
                 SELECT COUNT(id) as total 
                 FROM options
                 WHERE poll_id = ?
-            `, [pollId]);
+            `, [option.poll.id]);
 
             const [optionsRegistered] = optionsRegisteredQuery.map((options: {total: number}) => options.total);
 

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OptionRepository from "../model/repository/OptionRepository";
 import OptionService from "../model/service/OptionService";
 import Option from "../model/entity/Option";
+import Poll from "../model/entity/Poll";
 
 export default class OptionsController {
     private _optionsRepository: OptionRepository;
@@ -49,8 +50,20 @@ export default class OptionsController {
     }
 
     public async delete(req: Request, res: Response) {
+        const optionId = Number.parseInt(<string> req.params.id);
+        const pollId = Number.parseInt(<string> req.params.poll_id);
+
+        const option = new Option(optionId, "", 0, new Poll(pollId, "", "" , "", []));
+        
         try {
-            
+            const totalOptionsRegistered = await this._optionsRepository.getTotalOptionsRegistered(option);
+
+            if(totalOptionsRegistered < 3) {
+                res.status(400).send("Enquetes precisam ter no mínimo 3 opções");
+            } else {
+                await this._optionsRepository.delete(option);
+                res.status(204).send();
+            }
         } catch (error) {
             res.status(500).send();
         }
