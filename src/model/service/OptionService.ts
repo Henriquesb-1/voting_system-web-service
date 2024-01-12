@@ -1,14 +1,22 @@
+import VoteListener from "../VoteListener";
 import Option from "../entity/Option";
 import Poll from "../entity/Poll";
 import OptionRepository from "../repository/OptionRepository";
 import Connection from "./Connection";
 
 export default class OptionService implements OptionRepository {
+    #voteListeners: VoteListener[] = [];
 
     //Options will be get along with polls
     public async get(page: number): Promise<{ data: Option[], pages: number, total: number }> {
         try {
-            const options = [new Option(0, "", 0, new Poll(0, "", "", "", []))];
+            const connection = new Connection();
+
+            const options = <Option[]> await connection.query(`
+                SELECT id, content, vote_count as voteCount, poll_id as pollId
+                FROM options
+                WHERE poll_id = ?           
+            `, [])
 
             return {
                 data: options,
@@ -37,7 +45,7 @@ export default class OptionService implements OptionRepository {
         }
     }
 
-    public async update(option: Option): Promise<Option> {
+    public async update(option: Option, willUpdateVoteCount: boolean): Promise<Option> {
         try {
             const connection = new Connection();
 
@@ -48,6 +56,8 @@ export default class OptionService implements OptionRepository {
             `, [option.content, option.voteCount, option.id]);
 
             await connection.closeConnection();
+
+            if(willUpdateVoteCount) this.#voteListeners.forEach(listener => listener.voteEventHasHappened(option.id));
 
             return option;
         } catch (error) {
@@ -83,6 +93,14 @@ export default class OptionService implements OptionRepository {
             const [optionsRegistered] = optionsRegisteredQuery.map((options: {total: number}) => options.total);
 
             return optionsRegistered;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async getOptionById(id: number): Promise<Option> {
+        try {
+            return new Option(0, "", 0, new Poll(0, "", "", "", []));
         } catch (error) {
             throw error;
         }
