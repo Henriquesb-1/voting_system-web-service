@@ -33,8 +33,6 @@ export default class PollService implements PollRepository {
 
             if(dateSplited[2].length === 1) dateSplited[2] = `0${dateSplited[2]}`;
 
-            console.log()
-
             return Number.parseInt(this.fixDateToAlwaysGetTwoDigits(dateConverted).join(""))
         };
 
