@@ -166,7 +166,7 @@ export default class PollService implements PollRepository {
                 WHERE title = ?
             `, [title]);
 
-            const [poll] = pollQuery.map(poll => new Poll(poll.id, poll.title, poll.startDate, poll.endDate, [], this.getPoolStatus(poll.startDate, poll.endDate)));
+            const [poll] = pollQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), [], this.getPoolStatus(poll.startDate, poll.endDate)));
 
             const optionsQuery = <Option[]>await connection.query(`
                 SELECT id, content, vote_count as voteCount, poll_id as pollId
