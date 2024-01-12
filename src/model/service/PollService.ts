@@ -1,13 +1,37 @@
 import Option from "../entity/Option";
 import Poll from "../entity/Poll";
+import PollStatus from "../entity/PollStatus";
 import PollRepository from "../repository/PollRepository";
 import getNecessariesPages from "../utils/Paginator";
+import ParseDate from "../utils/ParseDate";
 import Connection from "./Connection";
 import Transaction from "./Transaction";
 
 export default class PollService implements PollRepository {
 
     private _limit: number = 10;
+
+    private getPoolStatus(startDate: string, endDate: string): PollStatus {
+        const date = new Date();
+
+        const convertDateToNumber = (dateToConvert: string) => {
+            const date = new Date(dateToConvert);
+            const dateConverted = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+            return Number.parseInt(dateConverted.split("-").join(""))
+        };
+
+        const today = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+        if (convertDateToNumber(today) < convertDateToNumber(startDate)) {
+            return PollStatus.WILL_START;
+        } else if (convertDateToNumber(today) > convertDateToNumber(endDate)) {
+            return PollStatus.EXPIRED;
+        } else {
+            return PollStatus.IN_CURSE;
+        }
+
+    }
 
     public async get(page: number): Promise<{ data: Poll[], pages: number, total: number }> {
         try {
@@ -16,7 +40,7 @@ export default class PollService implements PollRepository {
             const totalQuery = await connection.query("SELECT COUNT(id) as total FROM poll");
             const [total] = totalQuery.map((poll: { total: number }) => poll.total);
 
-            const polls = <Poll[]>await connection.query(`
+            const pollsQuery = <Poll[]>await connection.query(`
                 SELECT id, title, start_date as startDate, end_date as endDate
                 FROM poll
                 LIMIT ?
@@ -24,6 +48,8 @@ export default class PollService implements PollRepository {
             `, [this._limit, (page * this._limit - this._limit)]);
 
             const pages = getNecessariesPages(total, this._limit);
+
+            const polls: Poll[] = pollsQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), [], this.getPoolStatus(poll.startDate, poll.endDate)));
 
             for (let poll of polls) {
                 const optionsQuery = <Option[]>await connection.query(`
@@ -123,7 +149,7 @@ export default class PollService implements PollRepository {
             const connection = new Connection();
             const polls = <Poll[]>await connection.query(`SELECT title FROM poll WHERE title = ?`, [poll.title]);
             await connection.closeConnection();
-            
+
             return polls.length > 0;
         } catch (error) {
             throw error;

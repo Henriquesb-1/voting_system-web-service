@@ -1,17 +1,20 @@
 import Option from "./Option";
+import PollStatus from "./PollStatus";
 
 export default class Poll {
     private _id: number;
     private _title: string;
     private _startDate: string;
     private _endDate: string;
+    private _status: PollStatus;
     private _options: Option[];
 
-    public constructor(id: number, title: string, startDate: string, endDate: string, options: Option[]) {
+    public constructor(id: number, title: string, startDate: string, endDate: string, options: Option[], status: PollStatus = PollStatus.IN_CURSE) {
         this._id = id;
         this._title = title;
         this._startDate = startDate;
         this._endDate = endDate;
+        this._status = status;
         this._options = options;
     }
 
@@ -45,6 +48,14 @@ export default class Poll {
 
     public set endDate(endDate: string) {
         this._endDate = endDate;
+    }
+
+    public get status() {
+        return this._status;
+    }
+
+    public set status(status: PollStatus) {
+        this._status = status;
     }
 
     public get options() {
