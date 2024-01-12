@@ -74,4 +74,19 @@ export default class PollController {
             res.status(500).send();
         }
     }
+
+    public async getByTitle(req: Request, res: Response) {
+        try {
+            const title = <string>req.query.t;
+            
+            if(!title) {
+                res.status(400).send("Titulo precisa ser informado");
+            } else {
+                const poll = await this._pollRepository.getPollByTitle(title);
+                res.status(200).json(poll);
+            }
+        } catch (error) {
+            res.status(500).send();
+        }
+    }
 }

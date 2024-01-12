@@ -155,4 +155,30 @@ export default class PollService implements PollRepository {
             throw error;
         }
     }
+
+    public async getPollByTitle(title: string): Promise<Poll> {
+        try {
+            const connection = new Connection();
+
+            const pollQuery = <Poll[]> await connection.query(`
+                SELECT id, title, start_date as startDate, end_date as endDate
+                FROM poll
+                WHERE title = ?
+            `, [title]);
+
+            const [poll] = pollQuery.map(poll => new Poll(poll.id, poll.title, poll.startDate, poll.endDate, [], this.getPoolStatus(poll.startDate, poll.endDate)));
+
+            const optionsQuery = <Option[]>await connection.query(`
+                SELECT id, content, vote_count as voteCount, poll_id as pollId
+                FROM options
+                WHERE poll_id = ?                
+            `, [poll.id]);
+
+            poll.options = optionsQuery;
+
+            return poll;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
