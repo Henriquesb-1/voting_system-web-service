@@ -37,7 +37,7 @@ export default class OptionsController {
                     res.status(400).send("Id precisa ser informado");
                 } else if(!option.content) {
                     res.status(400).send("Conteudo precisa ser informado");
-                } else if(!option.voteCount || option.voteCount < 0) {
+                } else if(!option.voteCount && option.voteCount !== 0 || option.voteCount < 0) {
                     res.status(400).send("Número de votos invalido")
                 } else {
                     await this._optionsRepository.update(option);
