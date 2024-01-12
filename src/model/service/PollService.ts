@@ -11,6 +11,15 @@ export default class PollService implements PollRepository {
 
     private _limit: number = 10;
 
+    private fixDateToAlwaysGetTwoDigits(date: string) {
+        const dateSplited = date.split("-");
+
+        if(dateSplited[1].length === 1) dateSplited[1] = `0${dateSplited[1]}`;
+        if(dateSplited[2].length === 1) dateSplited[2] = `0${dateSplited[2]}`;
+
+        return dateSplited;
+    }
+
     private getPoolStatus(startDate: string, endDate: string): PollStatus {
         const date = new Date();
 
@@ -18,7 +27,15 @@ export default class PollService implements PollRepository {
             const date = new Date(dateToConvert);
             const dateConverted = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
-            return Number.parseInt(dateConverted.split("-").join(""))
+            const dateSplited = dateConverted.split("-");
+
+            if(dateSplited[1].length === 1) dateSplited[1] = `0${dateSplited[1]}`;
+
+            if(dateSplited[2].length === 1) dateSplited[2] = `0${dateSplited[2]}`;
+
+            console.log()
+
+            return Number.parseInt(this.fixDateToAlwaysGetTwoDigits(dateConverted).join(""))
         };
 
         const today = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
