@@ -53,7 +53,7 @@ export default class PollService implements PollRepository {
 
             for (let poll of polls) {
                 const optionsQuery = <Option[]>await connection.query(`
-                    SELECT id, content, vote_count, poll_id as pollId
+                    SELECT id, content, vote_count as voteCount, poll_id as pollId
                     FROM options
                     WHERE poll_id = ?                
                 `, [poll.id]);
