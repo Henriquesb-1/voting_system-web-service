@@ -9,7 +9,7 @@ import Transaction from "./Transaction";
 
 export default class PollService implements PollRepository {
 
-    private _limit: number = 5;
+    private _limit: number = 6;
 
     private fixDateToAlwaysGetTwoDigits(date: string) {
         const dateSplited = date.split("-");
