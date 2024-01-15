@@ -29,7 +29,6 @@ export default class UpdateVote implements VoteListener {
     public async voteCountHasUpdated(req?: Request, res?: Response) {
         try {
             const pollTitle = <string> req?.query.pollTitle;
-            console.log(pollTitle === this.#optionUpdated.poll.title)
 
             if(pollTitle === this.#optionUpdated.poll.title) this.#hasUpdated = true;
 
