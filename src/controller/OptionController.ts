@@ -4,6 +4,7 @@ import OptionService from "../model/service/OptionService";
 import Option from "../model/entity/Option";
 import Poll from "../model/entity/Poll";
 import VoteListener from "../model/VoteListener";
+import LogError from "../model/utils/LogError";
 
 export default class OptionsController {
     private _optionsRepository: OptionRepository;
@@ -23,6 +24,7 @@ export default class OptionsController {
             const options = await this._optionsRepository.get(0, pollId);
             res.status(200).json(options);
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -53,6 +55,7 @@ export default class OptionsController {
                 }
             }
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -73,6 +76,7 @@ export default class OptionsController {
                 res.status(204).send();
             }
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }

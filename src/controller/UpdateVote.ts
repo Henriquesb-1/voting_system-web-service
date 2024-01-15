@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import VoteListener from "../model/VoteListener";
 import Option from "../model/entity/Option";
 import Poll from "../model/entity/Poll";
+import LogError from "../model/utils/LogError";
 
 export default class UpdateVote implements VoteListener {
     #optionUpdated: Option;
@@ -26,18 +27,19 @@ export default class UpdateVote implements VoteListener {
         }
     }
 
-    public async voteCountHasUpdated(req?: Request, res?: Response) {
+    public async voteCountHasUpdated(req: Request, res: Response) {
         try {
             const pollTitle = <string> req?.query.pollTitle;
 
             if(pollTitle === this.#optionUpdated.poll.title) this.#hasUpdated = true;
 
-            res?.send(this.#hasUpdated); 
+            res.send(this.#hasUpdated); 
 
             this.#optionUpdated = this.#blankOption;
             this.#hasUpdated = false;
         } catch (error) {
-            throw error;
+            LogError(error);
+            res?.status(401).send();
         }
     }
 }

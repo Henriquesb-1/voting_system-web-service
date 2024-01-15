@@ -3,6 +3,7 @@ import PollRepository from "../model/repository/PollRepository";
 import PollService from "../model/service/PollService";
 import Poll from "../model/entity/Poll";
 import Crypt from "../model/utils/Crypt";
+import LogError from "../model/utils/LogError";
 
 export default class PollController {
     private _pollRepository: PollRepository;
@@ -17,6 +18,7 @@ export default class PollController {
             const { data, pages, total } = await this._pollRepository.get(page);
             res.status(200).json({ data, pages, total })
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -59,7 +61,7 @@ export default class PollController {
                 }
             }
         } catch (error) {
-            console.log(error);
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -71,6 +73,7 @@ export default class PollController {
             await this._pollRepository.delete(new Poll(poll.id, "", "", "", "", []));
             res.status(204).send();
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -86,6 +89,7 @@ export default class PollController {
                 res.status(200).json(poll);
             }
         } catch (error) {
+            LogError(error);
             res.status(500).send();
         }
     }
@@ -100,7 +104,8 @@ export default class PollController {
             if (isCorrect) next ? next() : res.status(204).send();
             else res.status(401).send();
         } catch (error) {
-
+            LogError(error);
+            res.status(500).send();
         }
     }
 }
