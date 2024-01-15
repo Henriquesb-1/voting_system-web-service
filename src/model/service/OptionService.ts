@@ -14,7 +14,7 @@ export default class OptionService implements OptionRepository {
     //Options will be get along with polls
     public async get(page: number): Promise<{ data: Option[], pages: number, total: number }> {
         try {
-            const options = [new Option(0, "", 0, new Poll(0, "", "", "", []))];
+            const options = [new Option(0, "", 0, new Poll(0, "", "", "", "", []))];
 
             return {
                 data: options,
@@ -30,12 +30,14 @@ export default class OptionService implements OptionRepository {
         try {
             const connection = new Connection();
 
-            await connection.query(`
+            const savedOptions = await connection.query(`
                 INSERT INTO options (content, poll_id)
                 VALUES (?, ?)
             `, [option.content, option.poll.id]);
 
             await connection.closeConnection();
+
+            option.id = savedOptions.insertId;
 
             return option;
         } catch (error) {

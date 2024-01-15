@@ -6,14 +6,16 @@ export default class Poll {
     private _title: string;
     private _startDate: string;
     private _endDate: string;
+    private _creatorCode: string;
     private _status: PollStatus;
     private _options: Option[];
 
-    public constructor(id: number, title: string, startDate: string, endDate: string, options: Option[], status: PollStatus = PollStatus.IN_CURSE) {
+    public constructor(id: number, title: string, startDate: string, endDate: string, creatorCode: string, options: Option[], status: PollStatus = PollStatus.IN_CURSE) {
         this._id = id;
         this._title = title;
         this._startDate = startDate;
         this._endDate = endDate;
+        this._creatorCode = creatorCode;
         this._status = status;
         this._options = options;
     }
@@ -48,6 +50,14 @@ export default class Poll {
 
     public set endDate(endDate: string) {
         this._endDate = endDate;
+    }
+
+    public get creatorCode() {
+        return this._creatorCode;
+    }
+
+    public set creatorCode(creatorCode: string) {
+        this._creatorCode = creatorCode;
     }
 
     public get status() {

@@ -64,7 +64,7 @@ export default class PollService implements PollRepository {
 
             const pages = getNecessariesPages(total, this._limit);
 
-            const polls: Poll[] = pollsQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), [], this.getPoolStatus(poll.startDate, poll.endDate)));
+            const polls: Poll[] = pollsQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), "", [], this.getPoolStatus(poll.startDate, poll.endDate)));
 
             for (let poll of polls) {
                 const optionsQuery = <Option[]>await connection.query(`
@@ -96,9 +96,9 @@ export default class PollService implements PollRepository {
 
             try {
                 const pollSaved = await connection.query(`
-                INSERT INTO poll (title, start_date, end_date)
-                VALUES(?, ?, ?)
-            `, [poll.title, poll.startDate, poll.endDate]);
+                INSERT INTO poll (title, start_date, end_date, creator_code)
+                VALUES(?, ?, ?, ?)
+            `, [poll.title, poll.startDate, poll.endDate, poll.creatorCode]);
 
                 poll.options.forEach(async option => {
                     await connection.query(`
@@ -129,9 +129,9 @@ export default class PollService implements PollRepository {
 
             await connection.query(`
                 UPDATE poll
-                SET title = ?, end_date = ?
+                SET title = ?, start_date = ?, end_date = ?
                 WHERE id = ?
-            `, [poll.title, poll.endDate, poll.id])
+            `, [poll.title, poll.startDate, poll.endDate, poll.id])
 
             await connection.closeConnection();
 
@@ -181,7 +181,7 @@ export default class PollService implements PollRepository {
                 WHERE title = ?
             `, [title]);
 
-            const [poll] = pollQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), [], this.getPoolStatus(poll.startDate, poll.endDate)));
+            const [poll] = pollQuery.map(poll => new Poll(poll.id, poll.title, ParseDate(poll.startDate), ParseDate(poll.endDate), "", [], this.getPoolStatus(poll.startDate, poll.endDate)));
 
             const optionsQuery = <Option[]>await connection.query(`
                 SELECT id, content, vote_count as voteCount, poll_id as pollId
@@ -194,6 +194,29 @@ export default class PollService implements PollRepository {
             poll.options = optionsQuery;
 
             return poll;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async isPollOwner(poll: Poll): Promise<{isOwner: boolean, creatorCode: string}> {
+        try {
+            const connection = new Connection();
+
+            const creatorCodeQuery = <Poll[]> await connection.query(`
+                SELECT creator_code as creatorCode
+                FROM poll
+                WHERE id = ?
+            `, [poll.id]);
+
+            await connection.closeConnection();
+
+            const [creatorCode] = creatorCodeQuery.map(option => option.creatorCode);
+
+            return {
+                isOwner: creatorCode === poll.creatorCode,
+                creatorCode
+            };
         } catch (error) {
             throw error;
         }

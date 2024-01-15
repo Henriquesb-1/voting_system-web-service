@@ -61,7 +61,7 @@ export default class OptionsController {
         const optionId = Number.parseInt(<string> req.params.id);
         const pollId = Number.parseInt(<string> req.params.poll_id);
 
-        const option = new Option(optionId, "", 0, new Poll(pollId, "", "" , "", []));
+        const option = new Option(optionId, "", 0, new Poll(pollId, "", "" , "", "", []));
         
         try {
             const totalOptionsRegistered = await this._optionsRepository.getTotalOptionsRegistered(option);

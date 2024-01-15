@@ -5,7 +5,7 @@ import Poll from "../model/entity/Poll";
 
 export default class UpdateVote implements VoteListener {
     #optionUpdated: Option;
-    #blankOption: Option =  new Option(0, "", 0, new Poll(0, "", "", "", []));
+    #blankOption: Option =  new Option(0, "", 0, new Poll(0, "", "", "", "", []));
     #hasUpdated: boolean = false;
 
     public constructor() {

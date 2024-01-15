@@ -22,9 +22,13 @@ export default class Routes {
         
         app.route("/poll/title")
             .get((req, res) => pollController.getByTitle(req, res));
+
+        app.route("/poll/auth")
+            .post((req, res) => pollController.isOnwerCodeCorrect(req, res))
         
-        app.route("/poll/:id")
-            .delete((req, res) => pollController.delete(req, res));
+        app.route("/poll/delete")
+            .put((req, res, next) => pollController.isOnwerCodeCorrect(req, res, next))
+            .put((req, res) => pollController.delete(req, res));
     }
 
     private OptionsRoutes() {
