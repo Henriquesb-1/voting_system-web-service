@@ -1,0 +1,21 @@
+CREATE SCHEMA voting_system;
+
+CREATE TABLE poll (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    creator_code VARCHAR(255) NOT NULL,
+    
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE options (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    content VARCHAR(255) NOT NULL UNIQUE,
+	vote_count INT DEFAULT(0),
+    poll_id INT UNSIGNED NOT NULL,
+    
+    PRIMARY KEY(id),
+    FOREIGN KEY (poll_id) REFERENCES poll(id) ON DELETE CASCADE
+);
