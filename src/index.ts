@@ -1,9 +1,8 @@
-import express  from "express";
+import express from "express";
 import cors from "cors";
 import dotEnv from "dotenv";
 
 import Routes from "./Routes";
-import path from "path";
 
 const app = express();
 

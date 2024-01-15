@@ -3,17 +3,25 @@ import OptionRepository from "../model/repository/OptionRepository";
 import OptionService from "../model/service/OptionService";
 import Option from "../model/entity/Option";
 import Poll from "../model/entity/Poll";
+import VoteListener from "../model/VoteListener";
 
 export default class OptionsController {
     private _optionsRepository: OptionRepository;
 
-    public constructor(optionRepository?: OptionRepository) {
-        this._optionsRepository = optionRepository ||  new OptionService();
+    public constructor(voteListener?: VoteListener) {
+        const optionService = new OptionService();
+
+        if(voteListener) optionService.addVoteListener(voteListener);
+        
+        this._optionsRepository = optionService;
     }
 
     public async get(req: Request, res: Response) {
         try {
-            
+            const pollId = Number.parseInt(<string>req.query.pollId);
+
+            const options = await this._optionsRepository.get(0, pollId);
+            res.status(200).json(options);
         } catch (error) {
             res.status(500).send();
         }
@@ -40,7 +48,7 @@ export default class OptionsController {
                 } else if(!option.voteCount && option.voteCount !== 0 || option.voteCount < 0) {
                     res.status(400).send("Número de votos invalido")
                 } else {
-                    await this._optionsRepository.update(option);
+                    await this._optionsRepository.update(option, req.body.willUpdateVoteCount);
                     res.status(200).json(option);
                 }
             }

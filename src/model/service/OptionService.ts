@@ -7,16 +7,14 @@ import Connection from "./Connection";
 export default class OptionService implements OptionRepository {
     #voteListeners: VoteListener[] = [];
 
+    public addVoteListener(voteListener: VoteListener) {
+        this.#voteListeners.push(voteListener);
+    }
+
     //Options will be get along with polls
     public async get(page: number): Promise<{ data: Option[], pages: number, total: number }> {
         try {
-            const connection = new Connection();
-
-            const options = <Option[]> await connection.query(`
-                SELECT id, content, vote_count as voteCount, poll_id as pollId
-                FROM options
-                WHERE poll_id = ?           
-            `, [])
+            const options = [new Option(0, "", 0, new Poll(0, "", "", "", []))];
 
             return {
                 data: options,
@@ -48,7 +46,7 @@ export default class OptionService implements OptionRepository {
     public async update(option: Option, willUpdateVoteCount: boolean): Promise<Option> {
         try {
             const connection = new Connection();
-
+            
             await connection.query(`
                 UPDATE options
                 SET content = ?, vote_count = ?
@@ -57,7 +55,7 @@ export default class OptionService implements OptionRepository {
 
             await connection.closeConnection();
 
-            if(willUpdateVoteCount) this.#voteListeners.forEach(listener => listener.voteEventHasHappened(option.id));
+            if(willUpdateVoteCount) this.#voteListeners.forEach(listener => listener.voteEventHasHappened(option));
 
             return option;
         } catch (error) {
@@ -100,7 +98,19 @@ export default class OptionService implements OptionRepository {
 
     public async getOptionById(id: number): Promise<Option> {
         try {
-            return new Option(0, "", 0, new Poll(0, "", "", "", []));
+            const connection = new Connection();
+
+            const optionsQuery = <Option[]>await connection.query(`
+                SELECT id, content, vote_count as voteCount, poll_id as pollId
+                FROM options
+                WHERE id = ?
+            `, [id]);
+
+            const [options] = optionsQuery.map(option => option);
+
+            await connection.closeConnection();
+
+            return options;
         } catch (error) {
             throw error;
         }
