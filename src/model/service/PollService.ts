@@ -189,6 +189,8 @@ export default class PollService implements PollRepository {
                 WHERE poll_id = ?                
             `, [poll.id]);
 
+            await connection.closeConnection();
+
             poll.options = optionsQuery;
 
             return poll;
