@@ -12,7 +12,7 @@ CREATE TABLE poll (
 
 CREATE TABLE options (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    content VARCHAR(255) NOT NULL UNIQUE,
+    content VARCHAR(255) NOT NULL,
 	vote_count INT DEFAULT(0),
     poll_id INT UNSIGNED NOT NULL,
     
